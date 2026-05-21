@@ -110,10 +110,10 @@ export const validatePassword = (password)=>{
             message:"Password must be a string"
         }
     }
-    if (password.length < 8 || password.length > 50) {
+    if (password.length < 8 || password.length > 128) {
         return {
             success:false,
-            message:'Password must be between 8 and 50 characters long.'
+            message:'Password must be between 8 and 128 characters long (both inclusive).'
         }
     }
     if (!/[A-Z]/.test(password)) {
