@@ -1,15 +1,17 @@
 import express from 'express';
 import { comment, deleteComment, editComment } from '../controllers/comment.controller.js';
-import { createPost, deletePost, editPost, getPosts, like, unlike } from '../controllers/post.controller.js';
+import { createPost, deletePost, editPostContent, getPosts, like} from '../controllers/post.controller.js';
+import { upload } from '../middlewares/multer.js';
+
+
 const router = express.Router();
 
-router.post('/createPost', createPost)
+router.post('/createPost', upload.single('image'), createPost);
 router.get('/getPosts', getPosts);
-router.put('/editPost/:id', editPost);
+router.put('/editPostContent/:id', editPostContent);
 router.delete('/deletePost/:id', deletePost);
 
 router.put('/like/:id', like);
-router.put('/unlike/:id', unlike);
 
 router.post('/comment/:id', comment);
 router.put('/editComment/:id', editComment);

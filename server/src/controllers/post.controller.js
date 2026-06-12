@@ -1,45 +1,167 @@
+import Post from "../models/post.model.js";
+import { uploadToCloudinary } from "../utils/cloudinaryUpload.js";
+
 export const getPosts = async (req, res) => {
-    return res.status(200).json({
-        success:true,
-        message:"get all posts"
-    });
+    try{
+        const posts = await Post.find()
+        .populate("author", "username profilePic")
+        .sort({createdAt:-1});
+        return res.status(200).json({
+            success:true,
+            message:"posts fetched successfully",
+            posts
+        });
+    } catch(error){
+        console.log(error);
+        return res.status(500).json({
+            success:false,
+            message:"Internal Server Error"
+        });
+    }
 }
 
-export const editPost = async (req, res) => {
-    const postId = req.params.id;
-    return res.status(200).json({
-        success:true,
-        message:`edit post with postid: ${postId}`
-    });
+export const editPostContent = async (req, res) => {
+    console.log("edit post content called");
+    try{
+        const postId = req.params.id;
+        const post = await Post.findById(postId);
+        if(!post){
+            return res.status(404).json({
+                success:false,
+                message:"post not found"
+            });
+        }
+        if(post.author.toString()!==req.user.id){
+            return res.status(403).json({
+                success:false,
+                message:"you are not authorized to edit this post"
+            });
+        }
+        const {content} = req.body;
+        
+        if(!content){
+            return res.status(400).json({
+                success:false,
+                message:"post content is required"
+            });
+        }
+        post.content = content;
+        await post.save();
+        await post.populate("author", "name username profilePic");
+        return res.status(200).json({
+            success:true,
+            message:"post updated successfully",
+            post
+        });
+
+    } catch(error){
+        console.log(error);
+        return res.status(500).json({
+            success:false,
+            message:'Internal Server Error'
+        })
+    }
 }
 
 export const deletePost = async (req, res) => {
-    const postId = req.params.id;
-    return res.status(200).json({
-        success:true,
-        message:`delete post with postid: ${postId}`
-    });
+    try{
+        const postId = req.params.id;
+        const post = await Post.findById(postId);
+        if(!post){
+            return res.status(404).json({
+                success:false,
+                message:"post not found"
+            });
+        }
+        if(post.author.toString()!==req.user.id){
+            return res.status(403).json({
+                success:false,
+                message:"you are not authorized to delete this post"
+            });
+        }
+        await Post.findByIdAndDelete(postId);
+        return res.status(200).json({
+            success:true,
+            message:"post deleted successfully"
+        });
+    } catch(error){
+        console.log(error);
+        return res.status(500).json({
+            success:false,
+            message:"Internal Server Error"
+        });
+    }
 }
 
 export const createPost = async (req, res) => {
-    return res.status(200).json({
-        success:true,
-        message:"create post"
-    });
+    try{
+        let imageUrl = null;
+        if(req.file){
+            const uploadedImage = await uploadToCloudinary(
+                req.file.buffer
+            );
+            imageUrl = uploadedImage.secure_url;
+        }
+        const {content} = req.body; //content is optional, user can create a post with just an image
+        if(!content && !imageUrl){
+            return res.status(400).json({
+                success:false,
+                message:"post content or image is required"
+            });
+        }
+
+        const newPost = new Post({
+            author: req.user.id,
+            content,
+            image: imageUrl
+        });
+        await newPost.save();
+        await newPost.populate("author", "name username profilePic");
+        return res.status(201).json({
+            success:true,
+            message:"post created successfully",
+            post:newPost
+        });
+
+    } catch(error){
+        console.log(error);
+        return res.status(500).json({
+            success:false,
+            message:"Internal Server Error"
+        });
+    }
 }
 
 export const like = async (req, res) => {
-    const postId = req.params.id;
-    return res.status(200).json({
-        success:true,
-        message:`like post with postid: ${postId}`
-    });
-}
-
-export const unlike = async (req, res) => {
-    const postId = req.params.id;
-    return res.status(200).json({
-        success:true,
-        message:`unlike post with postid: ${postId}`
-    });
+    try{
+        const postId = req.params.id;
+        const post = await Post.findById(postId);
+        if(!post){
+            return res.status(404).json({
+                success:false,
+                message:"post not found"
+            });
+        }
+        if (post.likes.includes(req.user.id)) {
+            await Post.findByIdAndUpdate(
+            postId,
+            { $pull: { likes: req.user.id } }
+        );
+        } else {
+            await Post.findByIdAndUpdate(
+                postId,
+                { $push: { likes: req.user.id } }
+         );
+        }
+        return res.status(200).json({
+            success:true,
+            message:"post like status updated successfully"
+        });
+    } catch(error){
+        console.log(error);
+        return res.status(500).json({
+            success:false,
+            message:"Internal Server Error"
+        });     
+    }
 }

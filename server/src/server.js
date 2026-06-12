@@ -5,7 +5,8 @@ import cookieParser from 'cookie-parser';
 import connectDB from './configs/db.js';
 import authRoutes from './routes/auth.route.js';
 import postRoutes from './routes/post.route.js';
-import userRoutes from './routes/user.route.js'
+import userRoutes from './routes/user.route.js';
+import { isAuthenticated } from './middlewares/authentication.js';
 
 dotenv.config();
 
@@ -16,8 +17,8 @@ connectDB();
 
 app.use(express.json());
 app.use('/api/auth', authRoutes);
-app.use('/api/post', postRoutes);
-app.use('/api/user', userRoutes);
+app.use('/api/post', isAuthenticated, postRoutes);
+app.use('/api/user', isAuthenticated, userRoutes);
 app.get('/api', (req,res)=>{
     res.status(200).json({
         status:"success",

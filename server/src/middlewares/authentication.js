@@ -6,7 +6,6 @@ export const isAuthenticated = (req,res,next)=>{
 try{
 
     const token = req.cookies.token;
-    console.log(token);
 
     if(!token){
 
@@ -20,10 +19,8 @@ try{
         token,
         process.env.JWT_SECRET
     );
-    console.log('token decoded');
 
     req.user = decoded; // can access user id via - user.id
-    console.log(req.user);
 
     next();
 
