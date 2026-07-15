@@ -14,7 +14,10 @@ const app = express();
 app.use(cookieParser());
 
 connectDB();
-
+app.use(cors({
+    origin: process.env.CLIENT_URL,
+    credentials:true
+})); // anyone can access the backend.
 app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/post', isAuthenticated, postRoutes);
