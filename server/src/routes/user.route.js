@@ -3,7 +3,7 @@ import { fetchUser, editBio, editProfilePicture, editName, follow, otherUser, un
 import { upload } from '../middlewares/multer.js';
 const router = express.Router();
 
-router.get('/', fetchUser);
+router.get('/me', fetchUser);
 router.get('/:id', otherUser);
 router.put('/edit/bio', editBio);
 router.put('/edit/profilePicture', upload.single("profilePic"), editProfilePicture);

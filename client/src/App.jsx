@@ -1,37 +1,35 @@
-import {useState, useEffect} from 'react'
+import React from 'react'
+import {Routes, Route} from 'react-router-dom';
+import Profile from './components/Profile';
+import { useSelector } from 'react-redux';
+import Home from './components/Home';
+import Login from './components/Login';
+import { useAuthHook } from './hooks/authHooks';
+import Auth from './components/Auth';
+import Signup from './components/Signup';
+import Feed from './components/Feed';
+import CreatePost from './components/CreatePost';
 
 function App() {
-  const [msg, setMsg] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  useEffect(()=>{
-    async function fetchMsg(){
-      try{
-        console.log("1");
-        const response = await fetch("http://localhost:3000/api");
-        console.log("2");
-        const data = await response.json();
-        console.log("3");
-        setMsg(data.message);
-        console.log("4");
-      } catch(error){
-        setError("some error occurred.");
-        console.log(error);
-      } finally{
-        setLoading(false);
-      }
-
-    }
-    fetchMsg();
-  }, []);
-  if(loading) return <h1>Loading...</h1>
+  useAuthHook();
+  const user = useSelector(state=>state.auth.user);
+  console.log('App...')
+  console.log(user.username);
   return (
-    <div>
-      <h1>Hello</h1>
-      <p>msg: {msg}</p>
-      <p>error: {error}</p>
-    </div>
+    <Routes>
+      <Route path='/' element={<Home />} >
+          <Route index element={<Feed />} />
+          <Route path='profile' element={<Profile />} />
+          <Route path='post' element={<CreatePost />} />
+      </Route>
+      <Route path='/auth' element={<Auth />} >
+        <Route index element={<Login />} />
+        <Route path='login' element={<Login />} />
+        <Route path='signup' element={<Signup />} />
+      </Route>
+    </Routes>
   )
 }
 
 export default App
+
