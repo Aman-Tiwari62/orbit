@@ -9,6 +9,9 @@ import Auth from './components/Auth';
 import Signup from './components/Signup';
 import Feed from './components/Feed';
 import CreatePost from './components/CreatePost';
+import MyPosts from './components/MyPosts';
+import Followers from './components/Followers'
+import Followings from './components/Followings'
 
 function App() {
   useAuthHook();
@@ -19,7 +22,12 @@ function App() {
     <Routes>
       <Route path='/' element={<Home />} >
           <Route index element={<Feed />} />
-          <Route path='profile' element={<Profile />} />
+          <Route path='profile' element={<Profile />}>
+            <Route index element={<MyPosts/>} />
+            <Route path='myPosts' element={<MyPosts/>} />
+            <Route path='followers' element={<Followers />} />
+            <Route path='followings' element={<Followings />} />
+          </Route>
           <Route path='post' element={<CreatePost />} />
       </Route>
       <Route path='/auth' element={<Auth />} >
