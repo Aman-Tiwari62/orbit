@@ -12,29 +12,49 @@ import CreatePost from './components/CreatePost';
 import MyPosts from './components/MyPosts';
 import Followers from './components/Followers'
 import Followings from './components/Followings'
+import Protected from './components/Protected';
+import Public from './components/Public';
+import NotFound from './components/NotFound';
 
 function App() {
+
   useAuthHook();
-  const user = useSelector(state=>state.auth.user);
+
+  const checkingAuth = useSelector(state=>state.auth.checkingAuth);
+
+  // for debugging:
   console.log('App...')
-  console.log(user.username);
+
+  // Prevent route evaluation while loading the initial session
+  if (checkingAuth) {
+    console.log('checking auth...')
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <h1>Loading account...</h1>
+      </div>
+    );
+  }
+
   return (
     <Routes>
-      <Route path='/' element={<Home />} >
-          <Route index element={<Feed />} />
-          <Route path='profile' element={<Profile />}>
-            <Route index element={<MyPosts/>} />
-            <Route path='myPosts' element={<MyPosts/>} />
-            <Route path='followers' element={<Followers />} />
-            <Route path='followings' element={<Followings />} />
-          </Route>
-          <Route path='post' element={<CreatePost />} />
+      <Route element={<Protected />} >
+        <Route path='/' element={<Home />} >
+            <Route index element={<Feed />} />
+            <Route path='profile' element={<Profile />}>
+              <Route index element={<MyPosts/>} />
+              <Route path='followers' element={<Followers />} />
+              <Route path='followings' element={<Followings />} />
+            </Route>
+            <Route path='post' element={<CreatePost />} />
+        </Route>
       </Route>
-      <Route path='/auth' element={<Auth />} >
-        <Route index element={<Login />} />
-        <Route path='login' element={<Login />} />
-        <Route path='signup' element={<Signup />} />
+      <Route element={<Public />}>
+        <Route path='/auth' element={<Auth />} >
+          <Route index element={<Login />} />
+          <Route path='signup' element={<Signup />} />
+        </Route>
       </Route>
+      <Route path='*' element={<NotFound />} />
     </Routes>
   )
 }

@@ -11,6 +11,8 @@ function Profile() {
     email: 'aman@example.com',
     profileImage: dummyProfile,
     bio: 'Creative developer building thoughtful experiences with modern web tools.',
+    followers: 128,
+    following: 94,
   }
 
   return (
@@ -50,9 +52,10 @@ function Profile() {
       id="navbarforprofile"
       className="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 shadow-sm backdrop-blur"
     >
-      <div className="flex items-center gap-3 text-lg font-semibold text-slate-700">
+      <div id='navbarprofile' className="flex flex-wrap items-center gap-3 text-lg font-semibold text-slate-700">
         <NavLink
-          to="myPosts"
+          to=""
+          end
           className={({ isActive }) =>
             `rounded-full px-3 py-1 transition ${isActive ? 'bg-slate-900 text-white shadow-sm' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`
           }
@@ -65,7 +68,7 @@ function Profile() {
             `rounded-full px-3 py-1 transition ${isActive ? 'bg-slate-900 text-white shadow-sm' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`
           }
         >
-          Followers
+          Followers <span className='text-blue-500'>{user.followers}</span>
         </NavLink>
         <NavLink
           to="followings"
@@ -73,7 +76,7 @@ function Profile() {
             `rounded-full px-3 py-1 transition ${isActive ? 'bg-slate-900 text-white shadow-sm' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`
           }
         >
-          Following
+          Following <span className='text-blue-500'>{user.following}</span>
         </NavLink>
       </div>
     </div>

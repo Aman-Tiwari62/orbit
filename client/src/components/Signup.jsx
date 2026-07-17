@@ -101,7 +101,7 @@ function Signup() {
             </form>
             <p className='text-center text-gray-500 py-2'>or</p>
             <div>
-                <Link to={'/auth/login'} className='flex justify-center font-bold hover:text-blue-500'>Login</Link>
+                <Link to={'/auth'} className='flex justify-center font-bold hover:text-blue-500'>Login</Link>
             </div>
         </div>
         <p className='text-red-500 font-bold'>{error}</p>
