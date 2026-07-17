@@ -2,12 +2,18 @@ import { useState } from 'react';
 import logo from '../assets/orbitLogo.png';
 import "@fontsource/plus-jakarta-sans/800.css";
 import { Link } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { setUser } from '../features/auth/authSlice';
+
+const baseURL = import.meta.env.VITE_BASE_URL;
 
 function Signup() {
-  const error = null;
+  const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const [formData, setFormData] = useState({
-    fullName:'',
-    userName:'',
+    name:'', // full name
+    username:'',
     email: '',
     password: ''
   });
@@ -17,15 +23,45 @@ function Signup() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Signup attempt:', formData);
+    setLoading(true);
+    setError("");
+    try {
+      // Make the API request
+      const response = await fetch(`${baseURL}/auth/signup`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+        credentials: 'include' // Attaches/receives the HttpOnly session cookie
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Invalid credentials');
+      }
+
+      // 3. Handle bad responses (e.g., 400, 401, 500)
+
+      // 4. Success: Save user to Redux and redirect to dashboard/feed
+      dispatch(setUser(data.user));
+      navigate('/'); 
+
+    } catch (err) {
+      // 5. Failure: Save the error message to display in the UI
+      setError(err.message);
+    } finally {
+      // Always stop the loading state whether request succeeds or fails
+      setLoading(false);
+    }
   };
 
   return (
-
     <div className="flex flex-col items-center gap-3">
-        <div className="w-full max-w-md rounded-[1.5rem] bg-slate-50 p-8 shadow-lg ring-1 ring-slate-200">
+        <div className="w-full max-w-md rounded-3xl bg-slate-50 p-8 shadow-lg ring-1 ring-slate-200">
             <div className="mb-8 text-center">
                 <h1 className="text-4xl font-semibold text-slate-900">Create Account</h1>
                 <p className="mt-2 text-sm text-slate-500">Sign up to create your account</p>
@@ -33,32 +69,32 @@ function Signup() {
 
             <form onSubmit={handleSubmit} className="space-y-5">
               <div>
-                <label htmlFor="email" className="mb-2 block font-medium text-slate-700">
+                <label htmlFor="fullName" className="mb-2 block font-medium text-slate-700">
                   Full Name
                 </label>
                 <input
                   id="fullName"
-                  name="fullName"
+                  name="name"
                   type="text"
                   required
-                  value={formData.fullName}
+                  value={formData.name}
                   onChange={handleChange}
-                  placeholder="Aman Tiwari"
+                  placeholder="Full Name"
                   className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-slate-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
                 />
               </div>
               <div>
-                <label htmlFor="email" className="mb-2 block font-medium text-slate-700">
+                <label htmlFor="username" className="mb-2 block font-medium text-slate-700">
                   Userame
                 </label>
                 <input
-                  id="userName"
-                  name="userName"
+                  id="username"
+                  name="username"
                   type="text"
                   required
                   value={formData.username}
                   onChange={handleChange}
-                  placeholder="aman12"
+                  placeholder="Username"
                   className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-slate-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
                 />
               </div>
@@ -94,6 +130,7 @@ function Signup() {
               </div>
               <button
                 type="submit"
+                onClick={handleSubmit}
                 className="w-full rounded-2xl bg-blue-600 px-4 py-3 text-2xl font-semibold text-white transition hover:bg-blue-700"
               >
                 Sign up

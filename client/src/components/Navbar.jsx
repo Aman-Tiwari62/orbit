@@ -6,8 +6,14 @@ import postIcon from '../assets/post.svg'
 import profileIcon from '../assets/profile.svg'
 import settingsIcon from '../assets/settings.svg'
 import logoutIcon from '../assets/logout.svg'
+import { useDispatch } from 'react-redux'
+import { setLoggingOut, clearUser } from '../features/auth/authSlice'
+
+const baseURL = import.meta.env.VITE_BASE_URL;
 
 function Navbar() {
+  const dispatch = useDispatch();
+
   const [settingsOpen, setSettingsOpen] = useState(false)
   const settingsRef = useRef(null)
 
@@ -26,6 +32,33 @@ function Navbar() {
     `flex items-center gap-3 rounded-2xl px-3 py-2 transition-colors duration-200 ${
       isActive ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white'
     }`
+
+    const handleLogout = async()=>{
+        dispatch(setLoggingOut(true));
+        try{
+          const response = await fetch(`${baseURL}/auth/logout`, {
+            method: 'POST',
+            credentials: 'include'
+          }); 
+
+          const data = await response.json();
+
+          if (!response.ok) {
+            throw new Error(data.message || 'Error loggin out');
+            alert("Error loggin out!");
+          }
+        
+          // 3. Clear user data (this resets logginOut back to false automatically)
+          dispatch(clearUser()); 
+        
+          // 4. Send them back to the login screen
+          navigate('/login');
+
+      } catch(error){
+        console.error("Logout failed", error);
+        dispatch(setLoggingOut(false));
+      }
+    }
 
   return (
     <aside className='w-60 min-h-screen bg-[#111827] text-slate-50 p-6 box-border flex flex-col'>
@@ -64,6 +97,7 @@ function Navbar() {
           <div className='absolute bottom-16 left-0 w-full rounded-[14px] bg-slate-800 shadow-[0_18px_40px_rgba(15,23,42,0.35)] py-2 z-10'>
             <button
               type='button'
+              onClick={handleLogout}
               className='w-full text-left px-4 py-3 text-slate-100 hover:bg-slate-700'
             >
               <div className='flex items-center gap-2'>

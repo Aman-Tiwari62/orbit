@@ -39,10 +39,11 @@ function Login() {
 
       const data = await response.json();
 
-      // 3. Handle bad responses (e.g., 400, 401, 500)
       if (!response.ok) {
         throw new Error(data.message || 'Invalid credentials');
       }
+
+      // 3. Handle bad responses (e.g., 400, 401, 500)
 
       // 4. Success: Save user to Redux and redirect to dashboard/feed
       dispatch(setUser(data.user));

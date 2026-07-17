@@ -7,6 +7,7 @@ const initialState = {
     user: null,
     isAuthenticated: false,
     checkingAuth: true,  // Defaults to true on page load
+    logginOut:false,
     // loading: false,
     // error: null          // Added to handle login/signup failures
 }
@@ -25,8 +26,13 @@ const authSlice = createSlice({
         clearUser: (state) => {
             state.user = null;
             state.isAuthenticated = false;
-            state.checkingAuth = false; // Done checking, they are officially logged out
+            state.checkingAuth = false;
+            state.logginOut = false; // Done checking, they are officially logged out
         },
+
+        setLoggingOut: (state, action) => {
+            state.logginOut = action.payload;
+        }
 
         // setLoading: (state, action) => {
         //     state.loading = action.payload;
@@ -45,6 +51,7 @@ const authSlice = createSlice({
 export const {
     setUser,
     clearUser,
+    setLoggingOut,
     // setLoading,
     // setCheckingAuth,
     // setError
