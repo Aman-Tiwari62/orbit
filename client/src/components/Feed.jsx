@@ -10,13 +10,13 @@ function Feed() {
   console.log('feed....')
   const dispatch = useDispatch();
   const posts = useSelector(state=>state.feed.posts);
-  console.log("posts: "+posts);
+  // console.log("posts: "+posts);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
   useEffect(() => {
-    console.log('feed>useEffect')
-    // if(posts.length>0) return;
+    if(posts.length>0) return;
+    console.log('feed fetched...')
     async function fetchPosts() {
       setLoading(true);
       setError('');
@@ -29,7 +29,7 @@ function Feed() {
           throw new Error(data.message || 'Failed to fetch posts.');
         }
         dispatch(setPosts(data.posts || []));
-        console.log(data.posts);
+        // console.log(data.posts);
       } catch (err) {
         setError(err.message || 'Failed to load posts.');
       } finally {

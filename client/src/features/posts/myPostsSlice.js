@@ -17,13 +17,17 @@ const myPostsSlice = createSlice({
         },
         setLoading : (state,action)=>{
             state.loading=action.payload;
+        },
+        addPostMyPost: (state, action) => {
+            state.posts.unshift(action.payload);
         }
     }  
 })
 
 export const {
     setPosts,
-    setLoading
+    setLoading,
+    addPostMyPost
 } = myPostsSlice.actions;
 
 export default myPostsSlice.reducer;

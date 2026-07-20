@@ -17,13 +17,17 @@ const feedSlice = createSlice({
         },
         setLoading : (state,action)=>{
             state.loading=action.payload;
-        }
+        },
+        addPostFeed: (state, action) => {
+            state.posts.unshift(action.payload);
+        },
     }  
 })
 
 export const {
     setPosts,
-    setLoading
+    setLoading,
+    addPostFeed
 } = feedSlice.actions;
 
 export default feedSlice.reducer;

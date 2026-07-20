@@ -1,8 +1,12 @@
 import React, { useState } from 'react'
+import { useDispatch } from 'react-redux';
+import { addPostFeed } from '../features/posts/feedSlice';
+import { addPostMyPost } from '../features/posts/myPostsSlice';
 
 const baseURL = import.meta.env.VITE_BASE_URL;
 
 function CreatePost() {
+  const dispatch = useDispatch();
   const [imagePreview, setImagePreview] = useState(null)
   const [caption, setCaption] = useState('')
   const [imageFile, setImageFile] = useState(null)
@@ -42,6 +46,8 @@ function CreatePost() {
         throw new Error(data.message || 'Invalid credentials');
       }
       setLoading(false);
+      dispatch(addPostFeed(data.post));
+      dispatch(addPostMyPost(data.post));
       alert("uploaded successfully")
     } catch(error){
       console.log(error);

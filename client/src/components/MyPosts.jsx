@@ -12,6 +12,8 @@ function MyPosts() {
   const [error, setError] = useState('');
 
   useEffect(() => {
+    if(posts.length>0) return;
+    console.log("my posts fetched...")
     async function fetchPosts() {
       setLoading(true);
       setError('');
