@@ -6,6 +6,8 @@ function CreatePost() {
   const [imagePreview, setImagePreview] = useState(null)
   const [caption, setCaption] = useState('')
   const [imageFile, setImageFile] = useState(null)
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleImageChange = (event) => {
     const file = event.target.files[0]
@@ -24,11 +26,12 @@ function CreatePost() {
       return
     }
 
-    const formData = new FormData();
-    formData.append("image", imageFile); // File object
-    formData.append("content", caption); 
-
+    setLoading(true);
+    setError("");
     try{
+      const formData = new FormData();
+      formData.append("image", imageFile); // File object
+      formData.append("content", caption); 
       const response = await fetch(`${baseURL}/post/createPost`,{
         method:"POST",
         credentials:'include',
@@ -38,11 +41,15 @@ function CreatePost() {
       if (!response.ok) {
         throw new Error(data.message || 'Invalid credentials');
       }
-      alert(`posted: ${data.message}`);
-      // add the post to
+      setLoading(false);
+      alert("uploaded successfully")
     } catch(error){
       console.log(error);
       alert(`Error: ${error}`);
+      setError(error.message);
+    }
+    finally{
+      setLoading(false);
     }
   }
 
@@ -142,6 +149,7 @@ function CreatePost() {
       <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
         <button
           type='submit'
+          disabled={loading}
           style={{
             background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
             color: '#ffffff',
@@ -153,7 +161,7 @@ function CreatePost() {
             boxShadow: '0 8px 20px rgba(37, 99, 235, 0.2)'
           }}
         >
-          Upload Post
+          {loading?"Uploading...":"Upload"}
         </button>
       </div>
     </form>
