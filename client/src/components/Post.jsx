@@ -3,64 +3,80 @@ import defaultImage from '../assets/dummyProfile.jpg'
 import likedIcon from '../assets/Liked.svg'
 import notLikedIcon from '../assets/notLiked.svg'
 
-function Post({ image = defaultImage, text = 'This is a dummy post caption.' }) {
+function Post({ post }) {
+  const { author = {}, content, image, likes = [], createdAt } = post || {}
   const [liked, setLiked] = useState(false)
+  const [likesCount, setLikesCount] = useState(likes.length)
+  const authorName = author.name || 'Unknown User'
+  const authorUsername = author.username ? `@${author.username}` : '@unknown'
+  const authorPic = author.profilePic || defaultImage
+
+  function toggleLike() {
+    setLiked((prev) => !prev)
+    setLikesCount((count) => count + (liked ? -1 : 1))
+  }
 
   return (
-    <div
+    <article
       style={{
         background: '#ffffff',
         borderRadius: '16px',
         boxShadow: '0 8px 24px rgba(0,0,0,0.08)',
         padding: '16px',
-        maxWidth: '560px',
-        margin: '0 auto 20px'
+        maxWidth: '640px',
+        width: '100%',
+        margin: '0 auto'
       }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
         <img
-          src={defaultImage}
-          alt='User profile'
+          src={authorPic}
+          alt={`${authorName} profile`}
           style={{
-            width: '44px',
-            height: '44px',
+            width: '48px',
+            height: '48px',
             borderRadius: '50%',
             objectFit: 'cover',
             border: '2px solid #e5e7eb'
           }}
         />
         <div>
-          <div style={{ fontWeight: 700, color: '#111827' }}>Aman Tiwari</div>
-          <div style={{ fontSize: '12px', color: '#6b7280' }}>@orbit_user</div>
+          <div style={{ fontWeight: 700, color: '#111827' }}>{authorName}</div>
+          <div style={{ fontSize: '12px', color: '#6b7280' }}>{authorUsername}</div>
         </div>
       </div>
 
-      <img
-        src={image}
-        alt='Post content'
-        style={{
-          width: '100%',
-          objectFit: 'cover',
-          borderRadius: '12px',
-          display: 'block'
-        }}
-      />
+      {image && (
+        <img
+          src={image}
+          alt='Post content'
+          style={{
+            width: '100%',
+            objectFit: 'cover',
+            borderRadius: '16px',
+            display: 'block',
+            marginBottom: '16px'
+          }}
+        />
+      )}
 
-      {text && (
-        <p style={{ margin: '12px 0 0', fontSize: '15px', color: '#374151', lineHeight: 1.5 }}>
-          {text}
+      {content && (
+        <p style={{ margin: '0 0 16px', fontSize: '15px', color: '#374151', lineHeight: 1.7 }}>
+          {content}
         </p>
       )}
 
       <div
         style={{
-          marginTop: '14px',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
           paddingTop: '12px',
           borderTop: '1px solid #e5e7eb'
         }}
       >
         <button
-          onClick={() => setLiked(!liked)}
+          onClick={toggleLike}
           style={{
             border: 'none',
             background: 'transparent',
@@ -78,11 +94,16 @@ function Post({ image = defaultImage, text = 'This is a dummy post caption.' }) 
             style={{ width: '24px', height: '24px' }}
           />
           <span style={{ color: liked ? '#dc2626' : '#6b7280', fontWeight: 600 }}>
-            {liked ? 'Liked' : 'Like'}
+            {likesCount} {likesCount === 1 ? 'like' : 'likes'}
           </span>
         </button>
+        {createdAt && (
+          <span style={{ fontSize: '12px', color: '#6b7280' }}>
+            {new Date(createdAt).toLocaleString()}
+          </span>
+        )}
       </div>
-    </div>
+    </article>
   )
 }
 

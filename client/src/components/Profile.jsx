@@ -1,19 +1,23 @@
 import React from 'react'
 import dummyProfile from '../assets/dummyProfile.jpg'
 import editIcon from '../assets/edit.svg'
+import defaultAvatar from '../assets/defaultAvatar.webp'
 import { NavLink, Outlet } from 'react-router-dom'
+import { useSelector } from 'react-redux';
 
 
 function Profile() {
-  const user = {
-    name: 'Aman Tiwari',
-    username: 'aman_tiwari',
-    email: 'aman@example.com',
-    profileImage: dummyProfile,
-    bio: 'Creative developer building thoughtful experiences with modern web tools.',
-    followers: 128,
-    following: 94,
-  }
+  const user = useSelector(state=>state.auth.user);
+  // user = {
+  //   id,
+  //   name,
+  //   username,
+  //   email,
+  //   profilePic,
+  //   bio,
+  //   followers[]
+  //   following[]
+  // }
 
   return (
     <>
@@ -29,7 +33,7 @@ function Profile() {
 
         <div className="mb-4 rounded-full bg-gradient-to-br from-cyan-400 via-blue-500 to-fuchsia-500 p-1.5">
           <img
-            src={user.profileImage}
+            src={user.profilePic || defaultAvatar}
             alt={user.name}
             className="block h-60 w-60 rounded-full border-4 border-white object-cover"
           />
@@ -68,7 +72,7 @@ function Profile() {
             `rounded-full px-3 py-1 transition ${isActive ? 'bg-slate-900 text-white shadow-sm' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`
           }
         >
-          Followers <span className='text-blue-500'>{user.followers}</span>
+          Followers <span className='text-blue-500'>{user.followers.length}</span>
         </NavLink>
         <NavLink
           to="followings"
@@ -76,7 +80,7 @@ function Profile() {
             `rounded-full px-3 py-1 transition ${isActive ? 'bg-slate-900 text-white shadow-sm' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`
           }
         >
-          Following <span className='text-blue-500'>{user.following}</span>
+          Following <span className='text-blue-500'>{user.following.length}</span>
         </NavLink>
       </div>
     </div>

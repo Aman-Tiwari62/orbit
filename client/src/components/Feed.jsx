@@ -1,15 +1,51 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import Post from './Post'
 
+const baseURL = import.meta.env.VITE_BASE_URL;
+
 function Feed() {
+  console.log('feed....')
+  const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    console.log('feed>useEffect')
+    async function fetchPosts() {
+      setLoading(true);
+      setError('');
+      try {
+        const response = await fetch(`${baseURL}/post/feed`, {
+          credentials: 'include'
+        });
+        const data = await response.json();
+        if (!response.ok) {
+          throw new Error(data.message || 'Failed to fetch posts.');
+        }
+        setPosts(data.posts || []);
+        console.log(data.posts);
+      } catch (err) {
+        setError(err.message || 'Failed to load posts.');
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchPosts();
+  }, []);
+
+  if (loading) return <div>Loading posts...</div>;
+  if (error) return <div>Error loading posts: {error}</div>;
+
   return (
-    <div>
-      <Post />
-      <Post />
-      <Post />
-      <Post />
+    <div style={{ display: 'grid', gap: '20px', padding: '20px' }}>
+      {posts.length === 0 ? (
+        <div>No posts available.</div>
+      ) : (
+        posts.map((post) => <Post key={post._id} post={post} />)
+      )}
     </div>
-  )
+  );
 }
 
 export default Feed

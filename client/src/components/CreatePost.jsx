@@ -1,5 +1,7 @@
 import React, { useState } from 'react'
 
+const baseURL = import.meta.env.VITE_BASE_URL;
+
 function CreatePost() {
   const [imagePreview, setImagePreview] = useState(null)
   const [caption, setCaption] = useState('')
@@ -14,7 +16,7 @@ function CreatePost() {
     setImagePreview(URL.createObjectURL(file))
   }
 
-  const handleUpload = (event) => {
+  const handleUpload = async (event) => {
     event.preventDefault()
 
     if (!imageFile) {
@@ -22,8 +24,26 @@ function CreatePost() {
       return
     }
 
-    console.log('Uploading post:', { caption, imageFile })
-    alert('Post ready to upload!')
+    const formData = new FormData();
+    formData.append("image", imageFile); // File object
+    formData.append("content", caption); 
+
+    try{
+      const response = await fetch(`${baseURL}/post/createPost`,{
+        method:"POST",
+        credentials:'include',
+        body: formData
+      })
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || 'Invalid credentials');
+      }
+      alert(`posted: ${data.message}`);
+      // add the post to
+    } catch(error){
+      console.log(error);
+      alert(`Error: ${error}`);
+    }
   }
 
   return (
