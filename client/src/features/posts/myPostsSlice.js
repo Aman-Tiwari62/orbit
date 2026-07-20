@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-console.log("post slice...")
+console.log("mypost slice...")
 
 const initialState = {
     posts:[],
@@ -7,8 +7,8 @@ const initialState = {
     error:null
 }
 
-const feedSlice = createSlice({
-    name:"feed",
+const myPostsSlice = createSlice({
+    name:"myPosts",
     initialState,
     reducers:{
         setPosts : (state, action)=>{
@@ -24,6 +24,6 @@ const feedSlice = createSlice({
 export const {
     setPosts,
     setLoading
-} = feedSlice.actions;
+} = myPostsSlice.actions;
 
-export default feedSlice.reducer;
+export default myPostsSlice.reducer;

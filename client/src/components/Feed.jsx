@@ -1,16 +1,22 @@
 import React, { useState, useEffect } from 'react'
 import Post from './Post'
+import { useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
+import { setPosts} from '../features/posts/feedSlice';
 
 const baseURL = import.meta.env.VITE_BASE_URL;
 
 function Feed() {
   console.log('feed....')
-  const [posts, setPosts] = useState([]);
+  const dispatch = useDispatch();
+  const posts = useSelector(state=>state.feed.posts);
+  console.log("posts: "+posts);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
   useEffect(() => {
     console.log('feed>useEffect')
+    // if(posts.length>0) return;
     async function fetchPosts() {
       setLoading(true);
       setError('');
@@ -22,7 +28,7 @@ function Feed() {
         if (!response.ok) {
           throw new Error(data.message || 'Failed to fetch posts.');
         }
-        setPosts(data.posts || []);
+        dispatch(setPosts(data.posts || []));
         console.log(data.posts);
       } catch (err) {
         setError(err.message || 'Failed to load posts.');
@@ -32,7 +38,7 @@ function Feed() {
     }
 
     fetchPosts();
-  }, []);
+  }, [dispatch]);
 
   if (loading) return <div>Loading posts...</div>;
   if (error) return <div>Error loading posts: {error}</div>;
