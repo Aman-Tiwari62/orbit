@@ -204,6 +204,7 @@ export const createPost = async (req, res) => {
 }
 
 export const like = async (req, res) => {
+    console.log("like called");
     try{
         const postId = req.params.id;
         const post = await Post.findById(postId);
@@ -213,20 +214,18 @@ export const like = async (req, res) => {
                 message:"post not found"
             });
         }
-        if (post.likes.includes(req.user.id)) {
-            await Post.findByIdAndUpdate(
+        const updatedPost = await Post.findByIdAndUpdate(
             postId,
-            { $pull: { likes: req.user.id } }
-        );
-        } else {
-            await Post.findByIdAndUpdate(
-                postId,
-                { $push: { likes: req.user.id } }
-         );
-        }
+            post.likes.includes(req.user.id)
+                ? { $pull: { likes: req.user.id } }
+                : { $push: { likes: req.user.id } },
+            { new: true }
+        ).populate("author", "name username profilePic");
+
         return res.status(200).json({
-            success:true,
-            message:"post like status updated successfully"
+            success: true,
+            message: "post like status updated successfully",
+            post: updatedPost
         });
     } catch(error){
         console.log(error);
