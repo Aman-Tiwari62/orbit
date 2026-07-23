@@ -3,6 +3,7 @@ console.log("post slice...")
 
 const initialState = {
     posts:[],
+    page:1,
     loading:false,
     error:null
 }
@@ -21,13 +22,18 @@ const feedSlice = createSlice({
         addPostFeed: (state, action) => {
             state.posts.unshift(action.payload);
         },
+        addPostsToFeed: (state, action) => {
+            state.posts.push(...action.payload.posts);
+            state.page = action.payload.page;
+        }
     }  
 })
 
 export const {
     setPosts,
     setLoading,
-    addPostFeed
+    addPostFeed,
+    addPostsToFeed
 } = feedSlice.actions;
 
 export default feedSlice.reducer;
